@@ -1,30 +1,20 @@
+import { MatchReader } from './MatchReader';
 import { CsvFileReader } from './CsvFileReader';
+import { Summary } from './Summary';
+import { WinsAnalysis } from './analyzers/WinsAnalysis';
+import { ConsoleReport } from './reportTargets/ConsoleReport';
 
-const reader = new CsvFileReader('original.csv');
-reader.read();
-const matches = reader.data;
+// Create an Object that satisfies the 'DataReader' interface
+const csvFileReader = new CsvFileReader('original.csv');
 
-enum MatchResult {
-  HomeWin = 'H',
-  AwayWin = 'A',
-  Draw = 'D'
-}
+// Create an Instance of MatchReader and pass something
+// satisfaying the 'DataReader' interface
+const matchReader = new MatchReader(csvFileReader);
+matchReader.load();
 
-// const printMatchResult = (): MatchResult => {
-//   if (match[5] === 'H') {
-//     return MatchResult.HomeWin;
-//   }
-//   return MatchResult.AwayWin;
-// };
+const summary = new Summary(
+  new WinsAnalysis('Man United'),
+  new ConsoleReport()
+);
 
-// let manUnitedWins = 0;
-
-// for (let match of matches) {
-//   if (match[1] === 'Man United' && match[5] === MatchResult.HomeWin) {
-//     manUnitedWins++;
-//   } else if (match[2] === 'Man United' && match[5] === MatchResult.AwayWin) {
-//     manUnitedWins++;
-//   }
-// }
-
-// console.log(`Man United won ${manUnitedWins} games`);
+summary.buildAndPrintReport(matchReader.matches);
